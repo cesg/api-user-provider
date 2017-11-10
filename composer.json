@@ -1,0 +1,17 @@
+{
+    "name": "cesg/api-user-provider",
+    "description": "Laravel UserProvider over rest api",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "CristianSG",
+            "email": "cesgbla@gmail.com"
+        }
+    ],
+    "require": {
+        "illuminate/support": "^5.5",
+        "illuminate/contracts": "^5.5",
+        "guzzlehttp/guzzle": "~6.3"
+    }
+}
