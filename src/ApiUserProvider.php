@@ -1,29 +1,31 @@
 <?php
 
 use GuzzleHttp\Client;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
 {
-    protected $endponit;
+    protected $uri;
     protected $headers;
+    protected $hash;
 
-    public function __construct($endponit, $headers) {
-        $this->endpint = $endponit;
-        $this->headers = $headers;
+    public function __construct($config, $hash) {
+        $this->uri = $config['uri'];
+        $this->headers = $config['headers'];
+        $this->hash = $hash;
     }
 
     public function fetchUsers($credentials)
     {
         $client = new Client(array_merge([], $this->headers));
 
-        $response = $client->get($this->endpint, [
+        $response = $client->get($this->uri, [
             'query' => http_build_query($credentials)
         ]);
 
         $data = \GuzzleHttp\json_decode($response->getBody(), true);
-        $userAtributes = array_key_exists('data', $data) ? $data['data'] : $data;
-       
-        return new User($userAtributes);
+        $data = array_key_exists('data', $data) ? $data['data'] : $data;
+        return new User(array_shift($data));
     }
 
     /**
@@ -66,6 +68,8 @@ class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
+        $user = $this->fetchUsers($credentials);
+        return $user;
     }
 
     /**

@@ -13,5 +13,10 @@
         "illuminate/support": "^5.5",
         "illuminate/contracts": "^5.5",
         "guzzlehttp/guzzle": "~6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cesg\\RestUserProvier": "src"
+        }
     }
 }
