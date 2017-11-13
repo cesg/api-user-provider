@@ -1,4 +1,6 @@
 <?php
+namespace Cesg\Auth\Provider;
+
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class User implements Authenticatable

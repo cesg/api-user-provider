@@ -1,4 +1,5 @@
 <?php
+namespace Cesg\Auth\Provider;
 
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -9,7 +10,8 @@ class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
     protected $headers;
     protected $hash;
 
-    public function __construct($config, $hash) {
+    public function __construct($config, $hash)
+    {
         $this->uri = $config['uri'];
         $this->headers = $config['headers'];
         $this->hash = $hash;
@@ -19,9 +21,12 @@ class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
     {
         $client = new Client(array_merge([], $this->headers));
 
-        $response = $client->get($this->uri, [
-            'query' => http_build_query($credentials)
-        ]);
+        $response = $client->get(
+            $this->uri,
+            [
+                'query' => http_build_query($credentials)
+            ]
+        );
 
         $data = \GuzzleHttp\json_decode($response->getBody(), true);
         $data = array_key_exists('data', $data) ? $data['data'] : $data;
