@@ -18,6 +18,11 @@ class User implements Authenticatable
         return $this->attributes[$attribute];
     }
 
+    public function getKey()
+    {
+        return $this->attributes['id'];
+    }
+
     /**
      * Get the name of the unique identifier for the user.
      *
@@ -25,7 +30,7 @@ class User implements Authenticatable
      */
     public function getAuthIdentifierName()
     {
-
+        return 'id';
     }
 
     /**
@@ -35,6 +40,7 @@ class User implements Authenticatable
      */
     public function getAuthIdentifier()
     {
+        return $this->attributes['id'];
     }
 
     /**
@@ -44,6 +50,7 @@ class User implements Authenticatable
      */
     public function getAuthPassword()
     {
+        return $this->attributes['password'];
     }
 
     /**
@@ -53,6 +60,7 @@ class User implements Authenticatable
      */
     public function getRememberToken()
     {
+        return $this->attributes[$this->getRememberTokenName()];
     }
 
     /**
@@ -63,6 +71,7 @@ class User implements Authenticatable
      */
     public function setRememberToken($value)
     {
+        $this->attributes[$this->getRememberTokenName()] = $value;
     }
 
     /**
@@ -72,5 +81,10 @@ class User implements Authenticatable
      */
     public function getRememberTokenName()
     {
+    }
+
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 }

@@ -3,23 +3,34 @@ namespace Cesg\Auth\Provider;
 
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Contracts\Hashing\Hasher;
 
-class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
+class ApiUserProvider implements UserProvider
 {
     protected $uri;
-    protected $headers;
+    protected $headers = [
+        'Accept' => 'aplication/json'
+    ];
     protected $hash;
+    protected $model;
+    protected $cache;
 
-    public function __construct($config, $hash)
+    public function __construct(array $config, Hasher $hash, $cache)
     {
         $this->uri = $config['uri'];
-        $this->headers = $config['headers'];
+        $this->headers = array_merge($this->headers, $config['headers']);
         $this->hash = $hash;
+        $this->model = $config['model'];
+        $this->cache = $cache;
     }
 
-    public function fetchUsers($credentials)
+    public function fetchUsers($credentials) : Authenticatable
     {
-        $client = new Client(array_merge([], $this->headers));
+        $client = new Client([
+            'allow_redirects' => false,
+            'headers' => $this->headers
+        ]);
 
         $response = $client->get(
             $this->uri,
@@ -27,10 +38,10 @@ class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
                 'query' => http_build_query($credentials)
             ]
         );
-
         $data = \GuzzleHttp\json_decode($response->getBody(), true);
         $data = array_key_exists('data', $data) ? $data['data'] : $data;
-        return new User(array_shift($data));
+
+        return new $this->model(array_shift($data));
     }
 
     /**
@@ -41,6 +52,9 @@ class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
      */
     public function retrieveById($identifier)
     {
+        return $this->cache->remember("api-users:users,identifier=$identifier", 2 , function () use ($identifier) {
+            return $this->fetchUsers(['id' => $identifier]);
+        });
     }
 
     /**
@@ -86,5 +100,6 @@ class ApiUserProvider implements Illuminate\Contracts\Auth\UserProvider
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
+        return $this->hash->check($credentials['password'], $user->getAuthPassword());
     }
 }
