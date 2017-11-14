@@ -14,6 +14,13 @@
         "illuminate/contracts": "^5.5",
         "guzzlehttp/guzzle": "~6.3"
     },
+    "extra": {
+      "laravel": {
+          "providers": [
+              "Cesg\\Auth\\Provider\\ApiUserServiceProvider"
+          ]
+      }
+    },
     "autoload": {
         "psr-4": {
             "Cesg\\Auth\\Provider\\": "src"
