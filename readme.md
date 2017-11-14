@@ -15,7 +15,7 @@ Add repository to composer.json file.
 
 Add composer dependecie
 ```
-  composer requiere cesg/api-user-provider
+  composer require cesg/api-user-provider
 ```
 
 ## Configuration
@@ -49,7 +49,7 @@ return [
 ```
 
 If you use laravel/passport need extend the Cesg\Auth\Provider\User and add the trait
-Laravel\Passport\HasApiTokens
+Laravel\Passport\HasApiTokens and set the provider model to you own class.
 
 ```php
   class User extends \Cesg\Auth\Provider\User

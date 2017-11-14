@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Cesg\\Auth\\Provider": "src"
+            "Cesg\\Auth\\Provider\\": "src"
         }
     }
 }
