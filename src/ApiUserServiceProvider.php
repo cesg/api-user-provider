@@ -12,14 +12,6 @@ class ApiUserServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/api-provider.php' => config_path('api-provider.php'),
-        ], 'config');
-        $this->mergeConfigFrom(__DIR__.'/../config/api-provider.php', 'api-provider');
-    }
-
-    public function register()
-    {
         $this->app['auth']->provider(
             'api-users',
             function ($app, array $config) {
@@ -33,5 +25,13 @@ class ApiUserServiceProvider extends ServiceProvider
                 return new ApiUserProvider($appConfig, $app['hash'], $app['cache']);
             }
         );
+    }
+
+    public function register()
+    {
+        $this->publishes([
+            __DIR__.'/../config/api-provider.php' => config_path('api-provider.php'),
+        ], 'config');
+        $this->mergeConfigFrom(__DIR__.'/../config/api-provider.php', 'api-provider');
     }
 }
