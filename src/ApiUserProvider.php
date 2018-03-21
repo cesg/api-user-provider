@@ -1,7 +1,10 @@
 <?php
+
 namespace Cesg\Auth\Provider;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Hashing\Hasher;
@@ -10,7 +13,7 @@ class ApiUserProvider implements UserProvider
 {
     protected $uri;
     protected $headers = [
-        'Accept' => 'aplication/json'
+        'Accept' => 'aplication/json',
     ];
     protected $hash;
     protected $model;
@@ -25,19 +28,28 @@ class ApiUserProvider implements UserProvider
         $this->cache = $cache;
     }
 
-    public function fetchUsers($credentials) : Authenticatable
+    /**
+     * @param $credentials
+     * @return Authenticatable
+     */
+    public function fetchUsers($credentials)
     {
         $client = new Client([
             'allow_redirects' => false,
-            'headers' => $this->headers
+            'headers' => $this->headers,
         ]);
 
-        $response = $client->get(
-            $this->uri,
-            [
-                'query' => http_build_query($credentials)
-            ]
-        );
+        try {
+            $response = $client->get(
+                $this->uri,
+                [
+                    'query' => http_build_query($credentials),
+                ]
+            );
+        } catch (ClientException $exception) {
+            return null;
+        }
+
         $data = \GuzzleHttp\json_decode($response->getBody(), true);
         $data = array_key_exists('data', $data) ? $data['data'] : $data;
 
@@ -48,11 +60,12 @@ class ApiUserProvider implements UserProvider
      * Retrieve a user by their unique identifier.
      *
      * @param  mixed  $identifier
+     *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
     public function retrieveById($identifier)
     {
-        return $this->cache->remember("api-users:users,identifier=$identifier", 2 , function () use ($identifier) {
+        return $this->cache->remember("api-users:users,identifier=$identifier", 2, function () use ($identifier) {
             return $this->fetchUsers(['id' => $identifier]);
         });
     }
@@ -62,6 +75,7 @@ class ApiUserProvider implements UserProvider
      *
      * @param  mixed   $identifier
      * @param  string  $token
+     *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
     public function retrieveByToken($identifier, $token)
@@ -73,7 +87,6 @@ class ApiUserProvider implements UserProvider
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @param  string  $token
-     * @return void
      */
     public function updateRememberToken(Authenticatable $user, $token)
     {
@@ -83,11 +96,13 @@ class ApiUserProvider implements UserProvider
      * Retrieve a user by the given credentials.
      *
      * @param  array  $credentials
+     *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
     public function retrieveByCredentials(array $credentials)
     {
         $user = $this->fetchUsers($credentials);
+
         return $user;
     }
 
@@ -96,6 +111,7 @@ class ApiUserProvider implements UserProvider
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @param  array  $credentials
+     *
      * @return bool
      */
     public function validateCredentials(Authenticatable $user, array $credentials)

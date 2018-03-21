@@ -1,0 +1,42 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->exclude(['resources', 'storage', 'bootstrap', 'public'])
+    ->in(__DIR__)
+;
+
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        // default
+        '@PSR2' => true,
+        '@Symfony' => true,
+        '@PHP71Migration' => true,
+        // additionally
+        'array_syntax' => ['syntax' => 'short'],
+        'blank_line_after_namespace' => true,
+        'blank_line_before_statement' => true,
+        'indentation_type' => true,
+        'concat_space' => true,
+        'line_ending' => true,
+        'no_closing_tag' => true,
+        'no_multiline_whitespace_around_double_arrow' => true,
+        'no_multiline_whitespace_before_semicolons' => true,
+        'no_unused_imports' => false,
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'protected_to_private' => false,
+        'phpdoc_align' => false,
+        'phpdoc_order' => true,
+        'phpdoc_summary' => false,
+        'php_unit_test_annotation' => ['case' => 'snake', 'style' => 'annotation'],
+        'random_api_migration' => true,
+        'single_quote' => true,
+        'simplified_null_return' => false,
+        'single_blank_line_at_eof' => true,
+        'single_line_comment_style' => ['comment_types' => ['hash']],
+        'trailing_comma_in_multiline_array' => true,
+        'yoda_style' => false,
+    ])
+    ->setFinder($finder)
+;
