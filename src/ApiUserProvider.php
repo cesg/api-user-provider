@@ -18,6 +18,7 @@ class ApiUserProvider implements UserProvider
     protected $hash;
     protected $model;
     protected $cache;
+    protected $cacheTtl;
 
     public function __construct(array $config, Hasher $hash, $cache)
     {
@@ -26,10 +27,12 @@ class ApiUserProvider implements UserProvider
         $this->hash = $hash;
         $this->model = $config['model'];
         $this->cache = $cache;
+        $this->cacheTtl = array_key_exists('cache_ttl', $config) ? $config['cache_ttl'] : 10;
     }
 
     /**
      * @param $credentials
+     *
      * @return Authenticatable
      */
     public function fetchUsers($credentials)
@@ -42,11 +45,11 @@ class ApiUserProvider implements UserProvider
         try {
             $response = $client->get(
                 $this->uri,
-                [
-                    'query' => http_build_query($credentials),
-                ]
+                ['query' => http_build_query($credentials)]
             );
         } catch (ClientException $exception) {
+            logger()->critical('Api provider: '.$exception->getMessage(), $exception->getTrace());
+
             return null;
         }
 
@@ -65,7 +68,7 @@ class ApiUserProvider implements UserProvider
      */
     public function retrieveById($identifier)
     {
-        return $this->cache->remember("api-users:users,identifier=$identifier", 2, function () use ($identifier) {
+        return $this->cache->remember("api-users:users,identifier=$identifier", $this->cacheTtl, function () use ($identifier) {
             return $this->fetchUsers(['id' => $identifier]);
         });
     }
