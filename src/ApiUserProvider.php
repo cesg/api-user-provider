@@ -104,7 +104,10 @@ class ApiUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        $user = $this->fetchUsers($credentials);
+        $key = http_build_query($credentials);
+        $user = $this->cache->remember("user-provider:$key", 1, function () use ($credentials) {
+            return $this->fetchUsers($credentials);
+        });
 
         return $user;
     }
