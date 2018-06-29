@@ -33,14 +33,10 @@ class ApiUserServiceProvider extends ServiceProvider
 
     private function addAuthorizationToken(array $appConfig)
     {
-        if ($this->app['session']->has($appConfig['cache-key'])) {
-            return array_merge($appConfig['headers'], [
-                'Authorization' => 'Bearer '.$this->app['session']->get($appConfig['cache-key']),
-            ]);
-        }
+        $token = $this->app['cache']->get($appConfig['cache-key']);
 
         return array_merge($appConfig['headers'], [
-            'Authorization' => 'Bearer '.$this->app['cache']->get($appConfig['cache-key']),
+            'Authorization' => "Bearer $token",
         ]);
     }
 }
