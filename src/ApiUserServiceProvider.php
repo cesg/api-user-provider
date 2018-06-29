@@ -35,12 +35,12 @@ class ApiUserServiceProvider extends ServiceProvider
     {
         if ($this->app['session']->has($appConfig['cache-key'])) {
             return array_merge($appConfig['headers'], [
-                'Authorization' => $this->app['session']->get($appConfig['cache-key']),
+                'Authorization' => 'Bearer '.$this->app['session']->get($appConfig['cache-key']),
             ]);
         }
 
         return array_merge($appConfig['headers'], [
-            'Authorization' => $this->app['cache']->get($appConfig['cache-key']),
+            'Authorization' => 'Bearer '.$this->app['cache']->get($appConfig['cache-key']),
         ]);
     }
 }
