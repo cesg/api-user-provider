@@ -1,15 +1,14 @@
 <?php
+
 namespace Cesg\Auth\Provider;
 
 use Illuminate\Support\ServiceProvider;
 
 /**
  * ApiUserServiceProvider
- * @package Cesg\Auth\Provider
  */
 class ApiUserServiceProvider extends ServiceProvider
 {
-
     public function boot()
     {
         $this->app['auth']->provider(
@@ -17,11 +16,8 @@ class ApiUserServiceProvider extends ServiceProvider
             function ($app, array $config) {
                 $appConfig = $app['config']['api-provider'];
                 $appConfig['model'] = $config['model'];
-                if ($app['cache']->has($appConfig['cache-key'])) {
-                    $appConfig['headers'] = array_merge($appConfig['headers'], [
-                       'Authorization' =>  $app['cache']->get($appConfig['cache-key'])
-                    ]);
-                }
+                $appConfig['headers'] = $this->addAuthorizationToken($appConfig);
+
                 return new ApiUserProvider($appConfig, $app['hash'], $app['cache']);
             }
         );
@@ -33,5 +29,18 @@ class ApiUserServiceProvider extends ServiceProvider
             __DIR__.'/../config/api-provider.php' => config_path('api-provider.php'),
         ], 'config');
         $this->mergeConfigFrom(__DIR__.'/../config/api-provider.php', 'api-provider');
+    }
+
+    private function addAuthorizationToken(array $appConfig)
+    {
+        if ($this->app['session']->has($appConfig['cache-key'])) {
+            return array_merge($appConfig['headers'], [
+                'Authorization' => $this->app['session']->get($appConfig['cache-key']),
+            ]);
+        }
+
+        return array_merge($appConfig['headers'], [
+            'Authorization' => $this->app['cache']->get($appConfig['cache-key']),
+        ]);
     }
 }
