@@ -47,7 +47,7 @@ class ApiUserProvider implements UserProvider
                 ['query' => http_build_query($credentials)]
             );
         } catch (ClientException $exception) {
-            logger()->critical('Api provider: '.$exception->getMessage(), $exception->getTrace());
+            logger()->critical($exception->getMessage(), $this->headers);
 
             return null;
         }
