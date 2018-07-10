@@ -28,10 +28,9 @@ publish the config file
 
 ```php
 return [
-    'cache-key' => 'user-api-access-token',
     'uri' => env('', 'localhost/api/v1/users'),
-    'headers' => [
-    ]
+    'bearer_token' => env('USER_PROVIDER_API_TOKEN', ''),
+    'headers' => []
 ];
 ```
 
