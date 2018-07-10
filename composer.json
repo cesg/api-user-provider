@@ -16,8 +16,8 @@
         "guzzlehttp/guzzle": "~6.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.0|~7.0",
-        "orchestra/testbench": "~3.5.0|~3.6.0",
+        "phpunit/phpunit": "~7.0",
+        "orchestra/testbench": "~3.6.0",
         "friendsofphp/php-cs-fixer": "^2.8"
     },
     "extra": {
@@ -30,6 +30,11 @@
     "autoload": {
         "psr-4": {
             "Cesg\\Auth\\Provider\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+          "Tests\\": "tests/"
         }
     }
 }
